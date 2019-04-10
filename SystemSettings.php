@@ -28,6 +28,12 @@ class SystemSettings extends \Piwik\Settings\Plugin\SystemSettings
     /** @var Setting */
     public $isOneSpecialCharacterRequired;
     
+    /** @var Setting */
+    public $isPasswordRotationOn;
+    
+    /** @var Setting */
+    public $passwordRotationDays;
+    
     protected function init()
     {
         $this->title = Piwik::translate('PasswordPolicyEnforcer_PasswordPolicyConfiguration');
@@ -37,6 +43,8 @@ class SystemSettings extends \Piwik\Settings\Plugin\SystemSettings
         $this->isOneLowercaseLetterRequired = $this->createRequireOneLowercaseLetterSetting();
         $this->isOneNumberRequired = $this->createRequireOneNumberSetting();
         $this->isOneSpecialCharacterRequired = $this->createRequireOneSpecialCharacterSetting();
+        $this->isPasswordRotationOn = $this->createPasswordRotationSetting();
+        $this->passwordRotationDays = $this->createPasswordRotationDaysSetting();
     }
     
     private function createMinLengthSetting()
@@ -82,6 +90,25 @@ class SystemSettings extends \Piwik\Settings\Plugin\SystemSettings
             $field->title = Piwik::translate('PasswordPolicyEnforcer_PasswordPolicyOneSpecialCharacterSetting');
             $field->uiControl = FieldConfig::UI_CONTROL_CHECKBOX;
             $field->description = Piwik::translate('PasswordPolicyEnforcer_PasswordPolicyOneSpecialCharacterSettingDescription');
+        });
+    }
+    
+    private function createPasswordRotationSetting()
+    {
+        return $this->makeSetting('requirePasswordRotation', false, FieldConfig::TYPE_BOOL, function (FieldConfig $field) {
+            $field->title = Piwik::translate('PasswordPolicyEnforcer_PasswordPolicyPasswordRotationSetting');
+            $field->uiControl = FieldConfig::UI_CONTROL_CHECKBOX;
+            $field->description = Piwik::translate('PasswordPolicyEnforcer_PasswordPolicyPasswordRotationSettingDescription');
+        });
+    }
+    
+    private function createPasswordRotationDaysSetting()
+    {
+        return $this->makeSetting('requirePasswordRotationDays', 30, FieldConfig::TYPE_INT, function (FieldConfig $field) {
+            $field->title = Piwik::translate('PasswordPolicyEnforcer_PasswordPolicyPasswordRotationDaysSetting');
+            $field->uiControl = FieldConfig::UI_CONTROL_TEXT;
+            $field->description = Piwik::translate('PasswordPolicyEnforcer_PasswordPolicyPasswordRotationDaysSettingDescription');
+            $field->condition = 'requirePasswordRotation==1';
         });
     }
     
